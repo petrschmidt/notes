@@ -77,13 +77,13 @@ const handler: ApiHandler<API.Login> = async (req, res) => {
               } else {
                 res.status(200).json({ err: 'Wrong e-mail or password' });
               }
-
-              resolve();
+            } else {
+              res.status(200).json({
+                err: 'A user with this e-mail address does not exist',
+              });
             }
 
-            res.status(200).json({
-              err: 'A user with this e-mail address does not exist',
-            });
+            resolve();
           } else {
             res.status(400).json({ err: 'E-mail or password cannot be empty' });
           }
@@ -95,7 +95,7 @@ const handler: ApiHandler<API.Login> = async (req, res) => {
         resolve();
       }
     } else {
-      res.status(400);
+      res.status(400).end();
       resolve();
     }
   });

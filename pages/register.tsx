@@ -17,7 +17,8 @@ import Head from 'next/head';
 import { getMetaTitle } from '../utils/helpers';
 import { API, post } from '../utils/api';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { AuthContext } from '../app/contexts/auth-context';
 
 type FormData = {
   name: string;
@@ -44,6 +45,7 @@ const schema = y.object({
 
 const Register = () => {
   const router = useRouter();
+  const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
@@ -65,7 +67,10 @@ const Register = () => {
     if (hasErrors) return;
 
     post(API.Register, { name, email, password })
-      .then(() => router.replace('/'))
+      .then(async () => {
+        authContext.refresh();
+        await router.replace('/');
+      })
       .catch(({ response }) => setError(response.data.err))
       .finally(() => setLoading(false));
   };

@@ -58,7 +58,7 @@ const handler: ApiHandler<API.Register> = async (req, res) => {
           });
       }
     } else {
-      res.status(400);
+      res.status(400).end();
       resolve();
     }
   });

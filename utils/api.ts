@@ -5,10 +5,16 @@ import { IronSession } from 'iron-session';
 import { IRON_SESSION_CONFIG } from './constants';
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { LoginHandler } from '../pages/api/login';
+import { NoteHandler } from '../pages/api/note';
+import { NoteListHandler } from '../pages/api/note-list';
+import { LogoutHandler } from '../pages/api/logout';
 
 export enum API {
   Register = '/api/register',
   Login = '/api/login',
+  Logout = '/api/logout',
+  Note = '/api/note',
+  NoteList = '/api/note-list',
 }
 
 type OptionalError = {
@@ -35,6 +41,9 @@ export type Handler<T = { request: {}; response: {} }> = T;
 export type HandlerData = {
   [API.Register]: RegisterHandler;
   [API.Login]: LoginHandler;
+  [API.Logout]: LogoutHandler;
+  [API.Note]: NoteHandler;
+  [API.NoteList]: NoteListHandler;
 };
 
 type ApiRequest<T extends API> = Omit<NextApiRequest, 'body'> & {

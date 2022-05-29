@@ -42,7 +42,9 @@ const Login = () => {
   } = useMutation({ mutationFn: (data: FormData) => post(API.Login, data) });
 
   useEffect(() => {
-    if (authContext.user || data?.id !== undefined) {
+    authContext.refresh();
+
+    if (authContext.user) {
       router.replace('/').then();
     }
   }, [authContext, data]);

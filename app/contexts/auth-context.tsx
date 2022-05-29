@@ -2,7 +2,7 @@ import React, { createContext, ReactNode, useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { API, post } from '../../utils/api';
 import { useRouter } from 'next/router';
-import { isEmptyObjectType } from 'tsutils';
+import axios from 'axios';
 
 type UserProps = {
   id: number;
@@ -16,6 +16,7 @@ export const AuthContext = createContext({
   } as UserProps | undefined,
   loading: false,
   refresh: () => {},
+  logout: () => {},
 });
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
@@ -23,6 +24,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const router = useRouter();
   const [user, setUser] = useState<UserProps | undefined>();
+  const [loading, setLoading] = useState(true);
 
   const {
     isLoading,
@@ -33,6 +35,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     refetchInterval: false,
     refetchIntervalInBackground: false,
   });
+
+  const logout = () => {
+    axios
+      .get(API.Logout)
+      .then(async () => {
+        await refetch();
+        setUser(undefined);
+        //await router.replace('/login');
+      })
+      .catch(() => console.log('Error while logging out'));
+  };
 
   useEffect(() => {
     if (!isError && data) {
@@ -47,15 +60,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }, [data, isError]);
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    setLoading(isLoading);
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (!loading && !user) {
       router.replace('/login').then().catch();
     }
-  }, [user, isLoading]);
+  }, [user, loading]);
 
   return (
-    <AuthContext.Provider
-      value={{ user, loading: isLoading, refresh: refetch }}
-    >
+    <AuthContext.Provider value={{ user, loading, refresh: refetch, logout }}>
       {children}
     </AuthContext.Provider>
   );
