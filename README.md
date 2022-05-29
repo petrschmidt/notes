@@ -4,13 +4,13 @@ Live Demo: https://uhk-fim-owe-notes-app.netlify.app
 
 ## How to run the application
 
-First install dependencies:
+1. First install dependencies:
 
 ```
 yarn
 ```
 
-Then set environment variables:
+2. Then set environment variables:
 
 ```env
 # .env / .env.development
@@ -23,7 +23,7 @@ SESSION_COOKIE_NAME=<session cookie name>
 SESSION_COOKIE_PASSWORD=<session cookie password>
 ```
 
-Start the app:
+3. Start the app:
 
 ```bash
 npm run dev
@@ -31,5 +31,5 @@ npm run dev
 yarn dev
 ```
 
-When in development, open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. When in development, open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
