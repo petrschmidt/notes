@@ -1,5 +1,7 @@
 # UHK FIM (OWE) Semestral Project - Notes App
 
+Live Demo: https://uhk-fim-owe-notes-app.netlify.app
+
 ## How to run the application
 
 First install dependencies:
