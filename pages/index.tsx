@@ -261,7 +261,6 @@ const Home: NextPage = () => {
           </Header>
         }
       >
-        <textarea>{editorValue}</textarea>
         {noteUid && (
           <>
             <RichTextEditor
