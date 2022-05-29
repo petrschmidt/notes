@@ -104,8 +104,10 @@ const Login = () => {
               {...getInputProps('password')}
             />
 
-            {data?.err && (
+            {/* @ts-ignore */}
+            {data.err && (
               <Alert title='Error' color='red' mt='md'>
+                {/* @ts-ignore */}
                 {data.err}
               </Alert>
             )}
