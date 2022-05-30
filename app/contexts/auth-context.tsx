@@ -3,6 +3,7 @@ import { useQuery } from 'react-query';
 import { API, post } from '../../utils/api';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import { showNotification } from '@mantine/notifications';
 
 type UserProps = {
   id: number;
@@ -42,9 +43,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       .then(async () => {
         await refetch();
         setUser(undefined);
-        //await router.replace('/login');
       })
-      .catch(() => console.log('Error while logging out'));
+      .catch(() =>
+        showNotification({
+          title: 'Error',
+          color: 'red',
+          message: 'An error occurred while logging out. Please, try again.',
+        }),
+      );
   };
 
   useEffect(() => {
