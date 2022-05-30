@@ -13,7 +13,7 @@ import {
 } from '@mantine/core';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { getMetaTitle } from '../utils/helpers';
+import { getMetaTitle, isBrowser } from '../utils/helpers';
 import dynamic from 'next/dynamic';
 import { useQuery } from 'react-query';
 import { API } from '../utils/api';
@@ -22,9 +22,9 @@ import { useRouter } from 'next/router';
 import { AuthContext } from '../app/contexts/auth-context';
 import { NavbarLink } from '../app/components/navbar-link';
 import { showNotification } from '@mantine/notifications';
-import type { Editor } from '@mantine/rte';
+import { useRichTextEditor } from '../app/components/rich-text-editor';
 
-const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
+const MAX_TITLE_LENGTH = 30;
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -32,8 +32,11 @@ const Home: NextPage = () => {
   const theme = useMantineTheme();
 
   const [opened, setOpened] = useState(false);
-  const [editorValue, setEditorValue] = useState('');
-  const editorRef = useRef<Editor>(null);
+  const [initialEditorValue, setInitialEditorValue] = useState('');
+
+  const { editor, getEditorValue, getEditorText } = useRichTextEditor({
+    value: initialEditorValue,
+  });
 
   const noteUid: string = (router.query?.n as string) ?? '';
 
@@ -58,7 +61,7 @@ const Home: NextPage = () => {
         },
       })
         .then((res) => {
-          setEditorValue(res.data?.content);
+          setInitialEditorValue(res.data?.content);
         })
         .catch(() =>
           showNotification({
@@ -69,18 +72,7 @@ const Home: NextPage = () => {
           }),
         );
     }
-  }, [setEditorValue, noteUid]);
-
-  useEffect(() => {
-    console.log(editorRef.current);
-    if (editorRef.current && editorRef.current.focus) {
-      editorRef.current.focus();
-    }
-  }, [editorRef]);
-
-  if (!authContext.user) {
-    return null;
-  }
+  }, [setInitialEditorValue, noteUid]);
 
   const createNote = () => {
     axios({
@@ -112,7 +104,8 @@ const Home: NextPage = () => {
       method: 'PATCH',
       data: {
         uid: noteUid,
-        content: editorValue,
+        title: getEditorText().substring(0, MAX_TITLE_LENGTH),
+        content: getEditorValue(),
       },
     })
       .then(async () => {
@@ -187,7 +180,7 @@ const Home: NextPage = () => {
                   to={`/?n=${note.uid}`}
                   active={noteUid === note.uid}
                 >
-                  {note.content ?? '&nbsp;'}
+                  {note.title}
                 </NavbarLink>
               ))}
             </Navbar.Section>
@@ -261,18 +254,7 @@ const Home: NextPage = () => {
           </Header>
         }
       >
-        {noteUid && (
-          <>
-            <RichTextEditor
-              ref={editorRef}
-              value={editorValue}
-              onChange={setEditorValue}
-              placeholder='Write anything...'
-              radius={0}
-              style={{ border: 'none', height: '100%' }}
-            />
-          </>
-        )}
+        {noteUid ? editor : undefined}
       </AppShell>
     </>
   );

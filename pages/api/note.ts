@@ -4,6 +4,7 @@ import { API, ApiHandler, Handler, withSession } from '../../utils/api';
 export type NoteHandler = Handler<{
   request: {
     uid?: string;
+    title?: string | null;
     content?: string | null;
   };
   response: {
@@ -21,6 +22,7 @@ const handler: ApiHandler<API.Note> = async (req, res) => {
             const { uid, content } = await client.note.create({
               data: {
                 userId: req.session.user.id,
+                title: '',
                 content: '',
               },
             });
@@ -50,13 +52,18 @@ const handler: ApiHandler<API.Note> = async (req, res) => {
             break;
           }
           case 'PATCH': {
-            const { uid: targetUid, content: noteContent } = req.body;
-            const notes = await client.note.updateMany({
+            const {
+              uid: targetUid,
+              title: noteTitle,
+              content: noteContent,
+            } = req.body;
+            await client.note.updateMany({
               where: {
                 userId: req.session.user.id,
                 uid: targetUid,
               },
               data: {
+                title: noteTitle,
                 content: noteContent,
               },
             });
@@ -83,7 +90,6 @@ const handler: ApiHandler<API.Note> = async (req, res) => {
 
         resolve();
       } catch (e) {
-        console.log(e);
         res.status(500).json({ err: 'Internal server error' });
         resolve();
       }

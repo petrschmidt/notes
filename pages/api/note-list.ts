@@ -1,12 +1,11 @@
 import client from '../../utils/database';
 import { API, ApiHandler, Handler, withSession } from '../../utils/api';
-import { stripHtml } from '../../utils/helpers';
 
 export type NoteListHandler = Handler<{
   request: {};
   response: {
     notes: {
-      content?: string | null;
+      title?: string | null;
     }[];
   };
 }>;
@@ -28,7 +27,7 @@ const handler: ApiHandler<API.NoteList> = async (req, res) => {
           res.status(200).json({
             notes: notes.map((note) => ({
               ...note,
-              content: stripHtml(note.content?.substring(0, 30) ?? ''),
+              title: note.title?.substring(0, 30) ?? '',
             })),
           });
           resolve();
