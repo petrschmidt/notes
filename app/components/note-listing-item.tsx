@@ -1,14 +1,18 @@
 import React from 'react';
-import { Group, ThemeIcon, UnstyledButton, Text } from '@mantine/core';
+import { UnstyledButton, Text } from '@mantine/core';
 import Link from 'next/link';
 
-type NavbarLink = {
+type NoteListingItem = {
   to: string;
   children: string;
   active?: boolean;
 };
 
-export const NavbarLink: React.FC<NavbarLink> = ({ children, to, active }) => (
+export const NoteListingItem: React.FC<NoteListingItem> = ({
+  children,
+  to,
+  active,
+}) => (
   <Link href={to} passHref>
     <a style={{ textDecoration: 'none' }}>
       <UnstyledButton

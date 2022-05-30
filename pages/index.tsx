@@ -20,7 +20,7 @@ import { API } from '../utils/api';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { AuthContext } from '../app/contexts/auth-context';
-import { NavbarLink } from '../app/components/navbar-link';
+import { NoteListingItem } from '../app/components/note-listing-item';
 import { showNotification } from '@mantine/notifications';
 import { useRichTextEditor } from '../app/components/rich-text-editor';
 
@@ -175,13 +175,13 @@ const Home: NextPage = () => {
                 Create new
               </Button>
               {notesData?.notes.map((note: any) => (
-                <NavbarLink
+                <NoteListingItem
                   key={note.uid}
                   to={`/?n=${note.uid}`}
                   active={noteUid === note.uid}
                 >
                   {note.title}
-                </NavbarLink>
+                </NoteListingItem>
               ))}
             </Navbar.Section>
             <Divider my='md' />
