@@ -21,7 +21,7 @@ import { useRouter } from 'next/router';
 import { AuthContext } from '../app/contexts/auth-context';
 import { NoteListingItem } from '../app/components/note-listing-item';
 import { showNotification } from '@mantine/notifications';
-import { useRichTextEditor } from '../app/components/rich-text-editor';
+import { useRichTextEditor } from '../app/hooks/use-rich-text-editor';
 import { ButtonLink } from '../app/components/button-link';
 
 const MAX_TITLE_LENGTH = 30;
