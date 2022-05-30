@@ -13,7 +13,7 @@ import {
 } from '@mantine/core';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { getMetaTitle, isBrowser } from '../utils/helpers';
+import { getMetaTitle } from '../utils/helpers';
 import { useQuery } from 'react-query';
 import { API } from '../utils/api';
 import axios from 'axios';
@@ -26,6 +26,12 @@ import { ButtonLink } from '../app/components/button-link';
 
 const MAX_TITLE_LENGTH = 30;
 
+type ControlsState = {
+  create?: boolean;
+  save?: boolean;
+  delete?: boolean;
+};
+
 const Home: NextPage = () => {
   const router = useRouter();
   const authContext = useContext(AuthContext);
@@ -33,6 +39,8 @@ const Home: NextPage = () => {
 
   const [opened, setOpened] = useState(false);
   const [initialEditorValue, setInitialEditorValue] = useState('');
+  const [editorLoading, setEditorLoading] = useState(false);
+  const [controlsLoading, setControlsLoading] = useState<ControlsState>({});
 
   const noteUid: string = (router.query?.n as string) ?? '';
 
@@ -49,6 +57,8 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (noteUid) {
+      setEditorLoading(true);
+
       axios({
         url: API.Note,
         method: 'POST',
@@ -66,11 +76,14 @@ const Home: NextPage = () => {
             message:
               'An error has occurred while loading note. Please, try again.',
           }),
-        );
+        )
+        .finally(() => setEditorLoading(false));
     }
   }, [setInitialEditorValue, noteUid]);
 
   const createNote = () => {
+    setControlsLoading((prev) => ({ ...prev, create: true }));
+
     axios({
       url: API.Note,
       method: 'PUT',
@@ -91,10 +104,17 @@ const Home: NextPage = () => {
           message:
             'An error has occurred while creating new note. Please, try again.',
         }),
+      )
+      .finally(() =>
+        setControlsLoading((prev) => ({ ...prev, create: false })),
       );
   };
 
   const saveNote = () => {
+    if (!noteUid) return;
+
+    setControlsLoading((prev) => ({ ...prev, save: true }));
+
     axios({
       url: API.Note,
       method: 'PATCH',
@@ -114,10 +134,15 @@ const Home: NextPage = () => {
           message:
             'An error has occurred while saving note. Please, try again.',
         }),
-      );
+      )
+      .finally(() => setControlsLoading((prev) => ({ ...prev, save: false })));
   };
 
   const deleteNote = () => {
+    if (!noteUid) return;
+
+    setControlsLoading((prev) => ({ ...prev, delete: true }));
+
     axios({
       url: API.Note,
       method: 'DELETE',
@@ -136,11 +161,15 @@ const Home: NextPage = () => {
           message:
             'An error has occurred while deleting note. Please, try again.',
         }),
+      )
+      .finally(() =>
+        setControlsLoading((prev) => ({ ...prev, delete: false })),
       );
   };
 
   const { editor, getEditorValue, getEditorText } = useRichTextEditor({
     value: initialEditorValue,
+    loading: notesLoading || editorLoading,
     disabled: !noteUid,
     disabledPlaceholder: (
       <>
@@ -176,11 +205,14 @@ const Home: NextPage = () => {
                 variant='light'
                 color='blue'
                 fullWidth
-                mb='md'
+                mb='xl'
                 onClick={createNote}
+                loading={controlsLoading.create}
+                disabled={controlsLoading.create}
               >
                 Create new
               </Button>
+              <Divider ml='xs' label='My Notes' size={0} />
               {notesData?.notes.map((note: any) => (
                 <NoteListingItem
                   key={note.uid}
@@ -235,6 +267,8 @@ const Home: NextPage = () => {
                         borderTopRightRadius: 0,
                       }}
                       onClick={saveNote}
+                      loading={controlsLoading.save}
+                      disabled={controlsLoading.save}
                     >
                       Save
                     </Button>
@@ -243,6 +277,8 @@ const Home: NextPage = () => {
                       color='red'
                       sx={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }}
                       onClick={deleteNote}
+                      loading={controlsLoading.delete}
+                      disabled={controlsLoading.delete}
                     >
                       Delete
                     </Button>
