@@ -1,5 +1,13 @@
 # UHK FIM (OWE) Semestral Project - Notes App
 
+### Tech Stack
+- [Next.js](https://nextjs.org/)
+- [Prisma](https://www.prisma.io/)
+- [PlanetScale](https://planetscale.com/)
+- [Mantine](https://mantine.dev/)
+- JsonWebToken
+- [Axios](https://axios-http.com/)
+
 Live Demo: https://uhk-fim-owe-notes-app.netlify.app
 
 ## How to run the application
@@ -17,7 +25,7 @@ yarn
 
 DATABASE_URL=<PlanetScale database URL>
 SHADOW_DATABASE_URL=<PlanetScale shadow database URL (for migrations)>
-JWT_SECRET=<JSONWebToken secret>
+JWT_SECRET=<JsonWebToken secret>
 
 SESSION_COOKIE_NAME=<session cookie name>
 SESSION_COOKIE_PASSWORD=<session cookie password>
