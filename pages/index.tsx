@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   AppShell,
   Burger,
@@ -14,7 +14,6 @@ import {
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { getMetaTitle, isBrowser } from '../utils/helpers';
-import dynamic from 'next/dynamic';
 import { useQuery } from 'react-query';
 import { API } from '../utils/api';
 import axios from 'axios';
@@ -23,6 +22,7 @@ import { AuthContext } from '../app/contexts/auth-context';
 import { NoteListingItem } from '../app/components/note-listing-item';
 import { showNotification } from '@mantine/notifications';
 import { useRichTextEditor } from '../app/components/rich-text-editor';
+import { ButtonLink } from '../app/components/button-link';
 
 const MAX_TITLE_LENGTH = 30;
 
@@ -33,10 +33,6 @@ const Home: NextPage = () => {
 
   const [opened, setOpened] = useState(false);
   const [initialEditorValue, setInitialEditorValue] = useState('');
-
-  const { editor, getEditorValue, getEditorText } = useRichTextEditor({
-    value: initialEditorValue,
-  });
 
   const noteUid: string = (router.query?.n as string) ?? '';
 
@@ -142,6 +138,17 @@ const Home: NextPage = () => {
         }),
       );
   };
+
+  const { editor, getEditorValue, getEditorText } = useRichTextEditor({
+    value: initialEditorValue,
+    disabled: !noteUid,
+    disabledPlaceholder: (
+      <>
+        Select a note, or{' '}
+        <ButtonLink onClick={createNote}>create a new one</ButtonLink>
+      </>
+    ),
+  });
 
   return (
     <>
@@ -254,7 +261,7 @@ const Home: NextPage = () => {
           </Header>
         }
       >
-        {noteUid ? editor : undefined}
+        {editor}
       </AppShell>
     </>
   );
